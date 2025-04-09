@@ -3,7 +3,9 @@ package io.github.pdv.sistema.pdv.controller;
 import io.github.pdv.sistema.pdv.dto.ResponseDto;
 import io.github.pdv.sistema.pdv.exeception.InvalidOperationException;
 import io.github.pdv.sistema.pdv.exeception.NoItemException;
+import io.github.pdv.sistema.pdv.exeception.PasswordNotFoundException;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -29,6 +31,19 @@ public class AplicationAdviceController {
         String msg = ex.getMessage();
         return new ResponseDto(msg);
     }
+
+    @ExceptionHandler(UsernameNotFoundException.class)
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    public ResponseDto handlerUsernameNotFoundException(UsernameNotFoundException ex){
+        return new ResponseDto<>(ex.getMessage());
+    }
+
+    @ExceptionHandler(PasswordNotFoundException.class)
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    public ResponseDto handlerPasswordNotFoundException(UsernameNotFoundException ex){
+        return new ResponseDto<>(ex.getMessage());
+    }
+
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)

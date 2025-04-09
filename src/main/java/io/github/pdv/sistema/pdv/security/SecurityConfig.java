@@ -14,6 +14,8 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.filter.OncePerRequestFilter;
 
 @Configuration
 @EnableWebSecurity
@@ -27,6 +29,9 @@ public class SecurityConfig {
 
     @Autowired
     private CustomUserDetailService userDetailService;
+
+    @Autowired
+    private JwtService jwtService;
 
 //    @Bean
 //    public AuthenticationManager authenticationManager(HttpSecurity http) throws Exception {
@@ -43,18 +48,22 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .cors(cors -> cors.disable())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(HttpMethod.POST, "/v1/sign-up").permitAll()
-                        .requestMatchers(HttpMethod.GET,  "/v1/info").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/v1/login").permitAll()
                         .anyRequest().authenticated()
                 )
                 .httpBasic(Customizer.withDefaults())
                 .sessionManagement(
                         session ->
                                 session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                );
+                )
+                .addFilterBefore(jwtFilter(), UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
 
+    }
+
+    public OncePerRequestFilter jwtFilter(){
+        return new JwtAuthFilter(jwtService, userDetailService);
     }
 }
 
