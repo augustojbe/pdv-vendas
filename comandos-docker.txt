@@ -1,0 +1,9 @@
+# Criar uma network entre o BD e o Pgadmim4
+docker network create library-network
+
+# Rodar container postgres na versao 16.3
+docker run --name pdv-vendas -p 5432:5432 -e POSTGRES_PASSWORD=docker -e POSTGRES_USER=docker -e POSTGRES_DB=pdv-vendas -d --network banco-postegres  postgres:16.3
+
+# Rodar Pgadmin 4
+docker run --name pgadmin4 -e PGADMIN_DEFAULT_EMAIL=admin@admin.com -e PGADMIN_DEFAULT_PASSWORD=admin -p 15432:80 -d --network banco-postegres dpage/pgadmin4:8.9
+
